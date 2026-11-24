@@ -1,0 +1,14 @@
+services:
+  ns-retain-drill:
+    build: .
+    image: ns-retain-drill:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - drill-data:/data
+    restart: unless-stopped
+
+volumes:
+  drill-data:
