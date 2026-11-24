@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS ops (
   state           TEXT NOT NULL,
   attempts        INTEGER NOT NULL DEFAULT 0,
   last_error      TEXT,
+  verified_freed_bytes INTEGER,
   updated_at      TEXT NOT NULL
 );
 """
@@ -57,6 +58,13 @@ class DB:
             conn.commit()
         finally:
             conn.close()
+        self._migrate()
+
+    def _migrate(self) -> None:
+        """Add columns used by newer releases to pre-existing SQLite files."""
+        columns = {row["name"] for row in self.query("PRAGMA table_info(ops)")}
+        if "verified_freed_bytes" not in columns:
+            self.execute("ALTER TABLE ops ADD COLUMN verified_freed_bytes INTEGER")
 
     def _conn(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.path, timeout=30)

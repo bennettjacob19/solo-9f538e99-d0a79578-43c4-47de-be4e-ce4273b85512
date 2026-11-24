@@ -35,9 +35,9 @@ engine: Engine
 async def lifespan(app: FastAPI):
     global engine
     engine = Engine(os.environ.get("DATA_DIR", "./data"))
-    resolved = engine.reconcile()  # 重启后核对结果未明的删除
+    resolved = engine.reconcile()  # 重启后核对结果未明/中断的删除
     if resolved:
-        print(f"[startup] reconciled {resolved} unknown delete op(s)")
+        print(f"[startup] reconciled {resolved} unknown/interrupted delete op(s)")
     yield
 
 
